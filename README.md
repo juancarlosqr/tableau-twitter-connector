@@ -10,7 +10,8 @@
 
 ```js
 module.exports = {
-  port: [port],
+  host: '127.0.0.1',
+  port: 3000,
   logger_env: '[logger_env]',
   session_key: '[session_key]',
   consumer_key: '[consumer_key]',
@@ -31,7 +32,6 @@ npm start
 ```
 
 - Open [http://127.0.0.1:3000](http://127.0.0.1:3000) in the browser
-
 
 ### How to run the social query
 

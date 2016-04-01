@@ -42,6 +42,6 @@ app.get('/', function (req, res) {
   res.redirect('/connect/twitter')
 })
 
-app.listen(config.port, function() {
-  console.log('Express server listening on port ' + config.port)
+app.listen(config.port, config.host, function() {
+  console.log('Express server listening on ' + config.host + ':' + config.port)
 })
