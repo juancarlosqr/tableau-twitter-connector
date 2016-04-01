@@ -4,6 +4,12 @@ var express = require('express')
   , config = require('./config')
   , Grant = require('grant-express')
   , grant = new Grant(require('./grant.json'))
+  , Purest = require('purest')
+  , twitter = new Purest({
+      provider:'twitter',
+      key: config.consumer_key,
+      secret: config.consumer_secret
+    })
 
 var app = express()
 
@@ -21,8 +27,15 @@ app.use(session({
 app.use(grant)
 
 app.get('/handle_twitter_callback', function (req, res) {
-  console.log('Twitter credentials', req.query)
-  res.end(JSON.stringify(req.query, null, 2))
+  twitter.query()
+    .select('followers/list')
+    .where({user_id: req.query.raw.user_id, count: 200})
+    .auth(req.query.access_token, req.query.access_secret)
+    .request(function (error, response, data) {
+      if (error) res.end(JSON.stringify(error, null, 2))
+      console.log('Followers count:', data.users.length)
+      res.end(JSON.stringify(data, null, 2))
+    })
 })
 
 app.get('/', function (req, res) {
