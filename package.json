@@ -1,0 +1,35 @@
+{
+  "name": "tableau-twitter-connector",
+  "version": "1.0.0",
+  "description": "Tableau Web Data Connector to get Twitter data",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "social": "node social.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juancarlosqr/tableau-twitter-connector.git"
+  },
+  "keywords": [
+    "Data",
+    "Tableau",
+    "Connector",
+    "Visualization",
+    "OAuth",
+    "Twitter"
+  ],
+  "author": "Juan Carlos Quintero",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/juancarlosqr/tableau-twitter-connector/issues"
+  },
+  "homepage": "https://github.com/juancarlosqr/tableau-twitter-connector#tableau-twitter-web-data-connector",
+  "dependencies": {
+    "express": "^4.13.4",
+    "express-session": "^1.13.0",
+    "grant-express": "^3.6.0",
+    "morgan": "^1.7.0",
+    "purest": "^2.0.1"
+  }
+}
