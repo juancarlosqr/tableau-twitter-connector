@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+  <meta http-equiv="Cache-Control" content="no-store" />
+  <style type="text/css">
+    body {
+      font-family: Verdana, sans-serif;
+      text-align: center;
+      margin: 80px auto;
+      width: 75%;
+    }
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
+  <script src="https://connectors.tableau.com/libs/tableauwdc-1.1.1.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  (function() {
+    var myConnector = tableau.makeConnector();
+
+    myConnector.getColumnHeaders = function() {
+      var fieldNames = ['User', 'Followers', 'Language'];
+      var fieldTypes = ['string', 'int', 'string'];
+      tableau.headersCallback(fieldNames, fieldTypes);
+    }
+
+    myConnector.getTableData = function(lastRecordToken) {
+      var dataToReturn = [];
+      var lastRecordToken = 0;
+      var hasMoreData = false;
+      var xhr = $.ajax({
+        url: '/twitter/followers?id=' + tableau.connectionData,
+        dataType: 'json',
+        success: function (data) {
+          if (data.users.length > 0) {
+            var i;
+            for (i = 0; i < data.users.length; ++i) {
+              dataToReturn.push({
+                'User': data.users[i].screen_name,
+                'Followers': data.users[i].followers_count,
+                'Language': data.users[i].lang
+              });
+            }
+            tableau.dataCallback(dataToReturn, dataToReturn.length.toString(), false);
+          } else {
+            var noDataMsg = "No results found for this Twitter account";
+            tableau.log(noDataMsg);
+            tableau.abortWithError(noDataMsg);
+          }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          tableau.log("Connection error: " + xhr.responseText + "\n" + thrownError);
+          tableau.abortWithError("Error connecting to the " + "<%= title %>");
+        }
+      });
+    }
+
+    tableau.registerConnector(myConnector);
+  })();
+
+  $(document).ready(function () {
+    $("#login").on('click', function() {
+      window.location.href = '/connect/twitter';
+    });
+    $("#getData").on('click', function() {
+      tableau.connectionName = "<%= title %>";
+      tableau.connectionData = "<%= sessionID %>";
+      tableau.submit();
+    });
+  });
+  </script>
+</head>
+<body>
+  <h1><%= title %></h1>
+  <button id="login" style="display: <%= btn_login %>;">Login with Twitter</button>
+  <button id="getData" style="display: <%= btn_data %>;">Get Twitter Followers</button>
+</body>
+</html>

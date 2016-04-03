@@ -1,6 +1,7 @@
 var express = require('express')
   , logger = require('morgan')
   , session = require('express-session')
+  , sessionStore = new session.MemoryStore()
   , config = require('./config')
   , Grant = require('grant-express')
   , grant = new Grant(require('./grant.json'))
@@ -9,38 +10,62 @@ var express = require('express')
       provider:'twitter',
       key: config.consumer_key,
       secret: config.consumer_secret
-    })
+    });
 
-var app = express()
+var app = express();
+
+// views setup-up
+app.set('views', __dirname + '/public');
+app.set('view engine', 'ejs');
 
 // morgan middleware
-app.use(logger(config.logger_env))
+app.use(logger(config.logger_env));
 
 // session middleware
 app.use(session({
+  store: sessionStore,
   saveUninitialized: false,
   secret: config.session_key,
   resave: false
-}))
+}));
 
 // grant middleware
-app.use(grant)
+app.use(grant);
 
 app.get('/handle_twitter_callback', function (req, res) {
-  twitter.query()
-    .select('followers/list')
-    .where({user_id: req.query.raw.user_id, count: 200})
-    .auth(req.query.access_token, req.query.access_secret)
-    .request(function (error, response, data) {
-      if (error) res.end(JSON.stringify(error, null, 2))
-      console.log('Followers count:', data.users.length)
-      res.end(JSON.stringify(data, null, 2))
-    })
-})
+  var sess = req.session;
+  sess.user_id = req.query.raw.user_id;
+  sess.access_token = req.query.access_token;
+  sess.access_secret = req.query.access_secret;
+  res.render('index', {
+    title: config.title,
+    sessionID: sess.id,
+    btn_login: 'none',
+    btn_data: 'inline'
+  });
+});
 
-app.get('/', function (req, res) {
-  res.redirect('/connect/twitter')
-})
+app.get('/twitter/followers', function (req, res) {
+  sessionStore.get(req.query.id, function(err, sess) {
+     twitter.query()
+      .select('followers/list')
+      .where({user_id: sess.user_id, count: 200})
+      .auth(sess.access_token, sess.access_secret)
+      .request(function (error, response, data) {
+        if (error) res.end(JSON.stringify(error, null, 2))
+        res.end(JSON.stringify(data, null, 2))
+      });
+  });
+});
+
+app.get('/', function(req, res) {
+  res.render('index', {
+    title: config.title,
+    sessionID: '',
+    btn_login: 'inline',
+    btn_data: 'none'
+  });
+});
 
 app.listen(config.port, config.host, function() {
   console.log('Express server listening on ' + config.host + ':' + config.port)

@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/juancarlosqr/tableau-twitter-connector#tableau-twitter-web-data-connector",
   "dependencies": {
+    "ejs": "^2.4.1",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "grant-express": "^3.6.0",

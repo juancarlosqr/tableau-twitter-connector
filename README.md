@@ -48,3 +48,5 @@ npm run social
 - [https://github.com/tableau/webdataconnector](https://github.com/tableau/webdataconnector)
 - [https://dev.twitter.com/rest/reference/get/followers/list](https://dev.twitter.com/rest/reference/get/followers/list)
 - [https://scotch.io/tutorials/implement-oauth-into-your-express-koa-or-hapi-applications-using-grant](https://scotch.io/tutorials/implement-oauth-into-your-express-koa-or-hapi-applications-using-grant)
+- [https://scotch.io/tutorials/use-ejs-to-template-your-node-application](https://scotch.io/tutorials/use-ejs-to-template-your-node-application)
+- [https://codeforgeek.com/2014/09/manage-session-using-node-js-express-4/](https://codeforgeek.com/2014/09/manage-session-using-node-js-express-4/)
