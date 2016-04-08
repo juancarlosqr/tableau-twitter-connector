@@ -10,6 +10,9 @@
       margin: 80px auto;
       width: 75%;
     }
+    h1, button {
+      display: none;
+    }
   </style>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
   <script src="https://connectors.tableau.com/libs/tableauwdc-1.1.1.js" type="text/javascript"></script>
@@ -42,14 +45,14 @@
             }
             tableau.dataCallback(dataToReturn, dataToReturn.length.toString(), false);
           } else {
-            var noDataMsg = "No results found for this Twitter account";
+            var noDataMsg = 'No results found for this Twitter account';
             tableau.log(noDataMsg);
             tableau.abortWithError(noDataMsg);
           }
         },
         error: function (xhr, ajaxOptions, thrownError) {
-          tableau.log("Connection error: " + xhr.responseText + "\n" + thrownError);
-          tableau.abortWithError("Error connecting to the " + "<%= title %>");
+          tableau.log('Connection error: ' + xhr.responseText + '\n' + thrownError);
+          tableau.abortWithError('Error connecting to the <%= title %>');
         }
       });
     }
@@ -58,12 +61,21 @@
   })();
 
   $(document).ready(function () {
-    $("#login").on('click', function() {
+    var sessionID = '<%= sessionID %>'
+      , btnLogin = $('#login')
+      , btnGetData = $('#getData');
+    $('h1').fadeIn();
+    if (sessionID.length > 0) {
+      btnGetData.fadeIn();
+    } else {
+      btnLogin.fadeIn();
+    }
+    btnLogin.on('click', function() {
       window.location.href = '/connect/twitter';
     });
-    $("#getData").on('click', function() {
-      tableau.connectionName = "<%= title %>";
-      tableau.connectionData = "<%= sessionID %>";
+    btnGetData.on('click', function() {
+      tableau.connectionName = '<%= title %>';
+      tableau.connectionData = sessionID;
       tableau.submit();
     });
   });
@@ -71,7 +83,7 @@
 </head>
 <body>
   <h1><%= title %></h1>
-  <button id="login" style="display: <%= btn_login %>;">Login with Twitter</button>
-  <button id="getData" style="display: <%= btn_data %>;">Get Twitter Followers</button>
+  <button id="login">Login with Twitter</button>
+  <button id="getData">Get Twitter Followers</button>
 </body>
 </html>

@@ -37,12 +37,7 @@ app.get('/handle_twitter_callback', function (req, res) {
   sess.user_id = req.query.raw.user_id;
   sess.access_token = req.query.access_token;
   sess.access_secret = req.query.access_secret;
-  res.render('index', {
-    title: config.title,
-    sessionID: sess.id,
-    btn_login: 'none',
-    btn_data: 'inline'
-  });
+  res.redirect('/?id=' + encodeURIComponent(sess.id));
 });
 
 app.get('/twitter/followers', function (req, res) {
@@ -61,12 +56,10 @@ app.get('/twitter/followers', function (req, res) {
 app.get('/', function(req, res) {
   res.render('index', {
     title: config.title,
-    sessionID: '',
-    btn_login: 'inline',
-    btn_data: 'none'
+    sessionID: req.query.id || ''
   });
 });
 
 app.listen(config.port, config.host, function() {
-  console.log('Express server listening on ' + config.host + ':' + config.port)
+  console.log('Express server listening on ' + config.host + ':' + config.port);
 })

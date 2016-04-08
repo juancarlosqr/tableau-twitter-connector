@@ -4,7 +4,7 @@
   "description": "Tableau Web Data Connector to get Twitter data",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "social": "node social.js"
   },
   "repository": {
@@ -32,5 +32,8 @@
     "grant-express": "^3.6.0",
     "morgan": "^1.7.0",
     "purest": "^2.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.9.1"
   }
 }
