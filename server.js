@@ -50,7 +50,13 @@ app.get('/twitter/followers', function (req, res) {
   sessionStore.get(req.query.id, function(err, sess) {
      twitter.query()
       .select('followers/list')
-      .where({user_id: sess.user_id, count: 200, cursor: req.query.cursor})
+      .where({
+        user_id: sess.user_id,
+        cursor: req.query.cursor,
+        count: 200,
+        skip_status: true,
+        include_user_entities: false
+      })
       .auth(sess.access_token, sess.access_secret)
       .request(function (error, response, data) {
         if (error) res.end(JSON.stringify(error, null, 2));
