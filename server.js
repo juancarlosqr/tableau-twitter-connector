@@ -14,9 +14,10 @@ var express = require('express')
 
 var app = express();
 
-// views setup-up
+// views and static setup-up
 app.set('views', __dirname + '/public');
 app.set('view engine', 'ejs');
+app.use(express.static('public'));
 
 // morgan middleware
 app.use(logger(config.logger_env));
@@ -33,11 +34,16 @@ app.use(session({
 app.use(grant);
 
 app.get('/handle_twitter_callback', function (req, res) {
-  var sess = req.session;
-  sess.user_id = req.query.raw.user_id;
-  sess.access_token = req.query.access_token;
-  sess.access_secret = req.query.access_secret;
-  res.redirect('/?id=' + encodeURIComponent(sess.id));
+  if (req.query.error) {
+    // denied access
+    res.redirect('/');
+  } else {
+    var sess = req.session;
+    sess.user_id = req.query.raw.user_id;
+    sess.access_token = req.query.access_token;
+    sess.access_secret = req.query.access_secret;
+    res.redirect('/?id=' + encodeURIComponent(sess.id));
+  }
 });
 
 app.get('/twitter/followers', function (req, res) {
