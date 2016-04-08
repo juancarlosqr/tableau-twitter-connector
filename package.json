@@ -1,11 +1,11 @@
 {
   "name": "tableau-twitter-connector",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Tableau Web Data Connector to get Twitter data",
+  "private": true,
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
-    "social": "node social.js"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",

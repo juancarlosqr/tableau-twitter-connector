@@ -26,24 +26,25 @@
       tableau.headersCallback(fieldNames, fieldTypes);
     }
 
-    myConnector.getTableData = function(lastRecordToken) {
+    myConnector.getTableData = function(recordToken) {
       var dataToReturn = [];
-      var lastRecordToken = 0;
+      var lastRecordToken = recordToken || -1;
       var hasMoreData = false;
       var xhr = $.ajax({
-        url: '/twitter/followers?id=' + tableau.connectionData,
+        url: '/twitter/followers?id=' + tableau.connectionData + '&cursor=' + lastRecordToken,
         dataType: 'json',
         success: function (data) {
           if (data.users.length > 0) {
-            var i;
-            for (i = 0; i < data.users.length; ++i) {
+            var i = data.users.length;
+            for (i; i--;) {
               dataToReturn.push({
                 'User': data.users[i].screen_name,
                 'Followers': data.users[i].followers_count,
                 'Language': data.users[i].lang
               });
             }
-            tableau.dataCallback(dataToReturn, dataToReturn.length.toString(), false);
+            hasMoreData = (data.next_cursor > 0);
+            tableau.dataCallback(dataToReturn, data.next_cursor, hasMoreData);
           } else {
             var noDataMsg = 'No results found for this Twitter account';
             tableau.log(noDataMsg);

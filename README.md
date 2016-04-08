@@ -4,25 +4,25 @@
 
 > With the Web Data Connector SDK, you can unlock a world of data that's available over the web. In addition to using the dozens of data connectors that are already available in Tableau, you can now create your own web data connector (WDC) that reads data from virtually any site that publishes data in JSON, XML, or HTML.
 
-## Running scripts
+## How to use it
+
+### Configuration
 
 - Create a config.js file like this
 
 ```js
 module.exports = {
-  host: '127.0.0.1',
-  port: 3000,
-  logger_env: '[logger_env]',
-  session_key: '[session_key]',
-  consumer_key: '[consumer_key]',
-  consumer_secret: '[consumer_secret]',
-  screen_name: '[screen_name]',
-  access_token: '[access_token]',
-  access_secret: '[access_secret]'
+  title: '[your_tableau_web_data_connector_title]',
+  host: '[host]',    // For local environment could be '127.0.0.1'
+  port: [port],    // For local environment could be 3000
+  logger_env: '[morgan_logger_env]',    // For local environment is 'dev'
+  session_key: '[node_session_key]',    // A very_secret_key string
+  consumer_key: '[your_twitter_app_consumer_key]',
+  consumer_secret: '[your_twitter_app_consumer_secret]'
 }
 ```
 
-### How to run the server
+### Run the server
 
 - Run the following in the command line
 
@@ -31,16 +31,9 @@ npm install
 npm start
 ```
 
-- Open [http://127.0.0.1:3000](http://127.0.0.1:3000) in the browser
+### Tableau's Web Data Connector
 
-### How to run the social query
-
-- Run the following in the command line
-
-```
-npm install
-npm run social
-```
+- Open [http://127.0.0.1:3000](http://127.0.0.1:3000) (update this to use your config) in the Tableau's Web Data Connector
 
 ## Resources
 
