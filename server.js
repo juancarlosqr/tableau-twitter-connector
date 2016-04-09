@@ -1,6 +1,7 @@
 var express = require('express')
   , logger = require('morgan')
   , session = require('express-session')
+  , auth = require('http-auth')
   , config = require('./config')
   , sysInfo = require('./utils/sys-info')
   , Grant = require('grant-express')
@@ -11,13 +12,15 @@ var express = require('express')
       key: config.consumer_key,
       secret: config.consumer_secret
     })
+  , httpAuth = auth.basic({
+        realm: config.title,
+        file: __dirname + '/utils/users.htpasswd'
+    })
   , env = process.env
-  , sessionStore = null;
-
-
-var app = express();
-var port = env.NODE_PORT || config.port;
-var host = env.NODE_IP || config.host;
+  , sessionStore = null
+  , app = express()
+  , port = env.NODE_PORT || config.port
+  , host = env.NODE_IP || config.host;
 
 // session middleware config
 if (env.NODE_ENV === 'production') {
@@ -85,7 +88,7 @@ app.get('/twitter/followers', function (req, res) {
   });
 });
 
-app.get('/info/:func', function(req, res) {
+app.get('/info/:func', auth.connect(httpAuth), function(req, res) {
   var func = req.params.func;
   if (func !== 'gen' && func !== 'poll') {
     res.end();
@@ -96,12 +99,12 @@ app.get('/info/:func', function(req, res) {
   }
 });
 
-app.get('/health', function(req, res) {
-  res.end();
+app.get('/monitor', auth.connect(httpAuth), function(req, res) {
+  res.render('monitor');
 });
 
-app.get('/monitor', function(req, res) {
-  res.render('monitor');
+app.get('/health', function(req, res) {
+  res.end();
 });
 
 app.get('/', function(req, res) {

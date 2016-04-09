@@ -32,6 +32,7 @@
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "grant-express": "^3.6.0",
+    "http-auth": "^2.2.9",
     "morgan": "^1.7.0",
     "purest": "^2.0.1"
   },
