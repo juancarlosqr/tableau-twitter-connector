@@ -23,7 +23,7 @@ var host = env.NODE_IP || config.host;
 if (env.NODE_ENV === 'production') {
   var MongoDBStore = require('connect-mongodb-session')(session);
   sessionStore = new MongoDBStore({
-    uri: `mongodb://${ config.session_user }:${ config.session_password }@${ $OPENSHIFT_MONGODB_DB_HOST }:${ $OPENSHIFT_MONGODB_DB_PORT }/`,
+    uri: env.OPENSHIFT_MONGODB_DB_URL,
     collection: config.session_collection
   });
 } else {
@@ -43,7 +43,7 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
 // morgan middleware
-app.use(logger(config.logger_env));
+app.use(logger(env.NODE_ENV || config.logger_env));
 
 // grant middleware
 app.use(grant);
