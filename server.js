@@ -1,7 +1,6 @@
 var express = require('express')
   , logger = require('morgan')
   , session = require('express-session')
-  , sessionStore = new session.MemoryStore()
   , config = require('./config')
   , sysInfo = require('./utils/sys-info')
   , Grant = require('grant-express')
@@ -12,11 +11,31 @@ var express = require('express')
       key: config.consumer_key,
       secret: config.consumer_secret
     })
-  , env = process.env;
+  , env = process.env
+  , sessionStore = null;
+
 
 var app = express();
 var port = env.NODE_PORT || config.port;
 var host = env.NODE_IP || config.host;
+
+// session middleware config
+if (env.NODE_ENV === 'production') {
+  var MongoDBStore = require('connect-mongodb-session')(session);
+  sessionStore = new MongoDBStore({
+    uri: `mongodb://${ config.session_user }:${ config.session_password }@${ $OPENSHIFT_MONGODB_DB_HOST }:${ $OPENSHIFT_MONGODB_DB_PORT }/`,
+    collection: config.session_collection
+  });
+} else {
+  sessionStore = new session.MemoryStore()
+}
+
+app.use(session({
+  store: sessionStore,
+  saveUninitialized: false,
+  secret: config.session_key,
+  resave: false
+}));
 
 // views and static setup-up
 app.set('views', __dirname + '/public');
@@ -25,14 +44,6 @@ app.use(express.static('public'));
 
 // morgan middleware
 app.use(logger(config.logger_env));
-
-// session middleware
-app.use(session({
-  store: sessionStore,
-  saveUninitialized: false,
-  secret: config.session_key,
-  resave: false
-}));
 
 // grant middleware
 app.use(grant);

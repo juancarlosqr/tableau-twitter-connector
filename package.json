@@ -5,7 +5,7 @@
   "private": true,
   "main": "start.js",
   "scripts": {
-    "start": "SET NODE_ENV=production&node --use_strict start.js",
+    "start": "node --use_strict start.js",
     "watch": "SET NODE_ENV=dev&nodemon server.js"
   },
   "repository": {
@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/juancarlosqr/tableau-twitter-connector#tableau-twitter-web-data-connector",
   "dependencies": {
+    "connect-mongodb-session": "^1.1.1",
     "ejs": "^2.4.1",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
