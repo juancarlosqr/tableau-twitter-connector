@@ -22,13 +22,13 @@ module.exports = {
 }
 ```
 
-### Run the server
+### Run the server (Development)
 
 - Run the following in the command line
 
 ```
 npm install
-npm start
+npm run watch
 ```
 
 ### Tableau's Web Data Connector

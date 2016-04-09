@@ -1,3 +1,7 @@
+/*
+IMPORTANT: Not in use but it works, file provided by OpenShift
+*/
+
 const http         = require('http'),
       fs           = require('fs'),
       path         = require('path'),
@@ -8,7 +12,7 @@ const http         = require('http'),
 let server = http.createServer(function (req, res) {
   let url = req.url;
   if (url == '/') {
-    url += 'index.html';
+    url += 'monitor.ejs';
   }
 
   // IMPORTANT: Your application HAS to respond to GET /health with status 200
@@ -18,11 +22,12 @@ let server = http.createServer(function (req, res) {
     res.writeHead(200);
     res.end();
   } else if (url.indexOf('/info/') == 0) {
+    console.log('slice', url.slice(6))
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-cache, no-store');
     res.end(JSON.stringify(sysInfo[url.slice(6)]()));
   } else {
-    fs.readFile('./static' + url, function (err, data) {
+    fs.readFile('./public' + url, function (err, data) {
       if (err) {
         res.writeHead(404);
         res.end();

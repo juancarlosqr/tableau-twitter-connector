@@ -1,7 +1,7 @@
 body {
   font: 20px/1.5 'Ubuntu', sans-serif;
   color: #F0E7D5;
-  background: #555 url('asphalt.png');
+  background: #555 url('../img/asphalt.png');
   text-align: center;
   margin: 0;
 }

@@ -36,5 +36,6 @@ if (cluster.isMaster) {
     });
   }
 } else {
-  require('./app.js');
+  // require('./app.js');
+  require('./server.js');
 }

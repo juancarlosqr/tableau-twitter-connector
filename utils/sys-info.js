@@ -29,7 +29,7 @@ exports.gen = function () {
     value: `${Math.round(os.totalmem() / 1048576)} MB`
   }, {
     name:  'Gear Memory',
-    value: `${env.OPENSHIFT_GEAR_MEMORY_MB} MB`
+    value: `${env.OPENSHIFT_GEAR_MEMORY_MB || 0} MB`
   }, {
     name:  'NODE_ENV',
     value: env.NODE_ENV

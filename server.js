@@ -3,6 +3,7 @@ var express = require('express')
   , session = require('express-session')
   , sessionStore = new session.MemoryStore()
   , config = require('./config')
+  , sysInfo = require('./utils/sys-info')
   , Grant = require('grant-express')
   , grant = new Grant(require('./grant.json'))
   , Purest = require('purest')
@@ -10,9 +11,12 @@ var express = require('express')
       provider:'twitter',
       key: config.consumer_key,
       secret: config.consumer_secret
-    });
+    })
+  , env = process.env;
 
 var app = express();
+var port = env.NODE_PORT || config.port;
+var host = env.NODE_IP || config.host;
 
 // views and static setup-up
 app.set('views', __dirname + '/public');
@@ -59,19 +63,45 @@ app.get('/twitter/followers', function (req, res) {
       })
       .auth(sess.access_token, sess.access_secret)
       .request(function (error, response, data) {
-        if (error) res.end(JSON.stringify(error, null, 2));
-        res.end(JSON.stringify(data, null, 2));
+        if (error) {
+          res.end(JSON.stringify(error, null, 2));
+        } else {
+          res.set('Content-Type', 'application/json');
+          res.set('Cache-Control', 'no-cache, no-store');
+          res.end(JSON.stringify(data, null, 2));
+        }
       });
   });
 });
 
+app.get('/info/:func', function(req, res) {
+  var func = req.params.func;
+  if (func !== 'gen' && func !== 'poll') {
+    res.end();
+  } else {
+    res.set('Content-Type', 'application/json');
+    res.set('Cache-Control', 'no-cache, no-store');
+    res.end(JSON.stringify(sysInfo[func](), null, 2));
+  }
+});
+
+app.get('/health', function(req, res) {
+  res.end();
+});
+
+app.get('/monitor', function(req, res) {
+  res.render('monitor');
+});
+
 app.get('/', function(req, res) {
+  res.set('Cache-Control', 'no-cache, no-store');
   res.render('index', {
     title: config.title,
     sessionID: req.query.id || ''
   });
 });
 
-app.listen(config.port, config.host, function() {
-  console.log('Express server listening on ' + config.host + ':' + config.port);
+app.listen(port, host, function() {
+  console.log(`Express server listening on ${ host }:${ port }`);
+  console.log(`Application worker ${ process.pid } started...`);
 });
