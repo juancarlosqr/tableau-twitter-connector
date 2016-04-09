@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "description": "Tableau Web Data Connector to get Twitter data",
   "private": true,
-  "main": "server.js",
+  "main": "start.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node --use_strict start.js",
+    "watch": "nodemon server.js"
   },
   "repository": {
     "type": "git",
