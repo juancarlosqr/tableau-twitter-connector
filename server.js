@@ -19,8 +19,8 @@ var express = require('express')
   , env = process.env
   , sessionStore = null
   , app = express()
-  , port = env.NODE_PORT || config.port
-  , host = env.NODE_IP || config.host;
+  , port = env.PORT || config.port;
+  // , host = env.NODE_IP || config.host;
 
 // session middleware config
 if (env.NODE_ENV === 'production') {
@@ -41,7 +41,7 @@ app.use(session({
 }));
 
 // views and static setup-up
-app.set('views', __dirname + '/public');
+app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
@@ -107,6 +107,10 @@ app.get('/health', function(req, res) {
   res.end();
 });
 
+app.get('/heroku', function(req, res) {
+  res.render('pages/index');
+});
+
 app.get('/', function(req, res) {
   res.set('Cache-Control', 'no-cache, no-store');
   res.render('index', {
@@ -115,7 +119,7 @@ app.get('/', function(req, res) {
   });
 });
 
-app.listen(port, host, function() {
-  console.log(`Express server listening on ${ host }:${ port }`);
+app.listen(port, function() {
+  console.log(`Express server listening on port ${ port }`);
   console.log(`Application worker ${ process.pid } started...`);
 });

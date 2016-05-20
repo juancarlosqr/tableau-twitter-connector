@@ -33,6 +33,15 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
+# Local development
+*.env
+*.dev
+.DS_Store
+
+# Docker
+Dockerfile
+docker-compose.yml
+
 users.htpasswd
 config.js
 grant.json
