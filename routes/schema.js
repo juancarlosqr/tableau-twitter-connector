@@ -15,6 +15,7 @@ router.get('/schema/:action', function (req, res, next) {
   pg.defaults.ssl = true;
   var client = new pg.Client(process.env.DATABASE_URL);
   client.connect();
+  console.log('Action requested', req.params.action);
   var query = client.query(queries[req.params.action]);
   query.on("end", function (result) {
     client.end();
@@ -23,18 +24,18 @@ router.get('/schema/:action', function (req, res, next) {
   });
 });
 
-router.get('/schema', function (req, res, next) {
-  pg.defaults.ssl = true;
-  pg.connect(process.env.DATABASE_URL, function (err, client) {
-    if (err) {
-      res.send({type: 'connect', message: 'error', error: err});
-      process.exit(1);
-    }
-    console.log('Connected to postgres! Running schemas...');
-    processSQLFile(path.resolve(__dirname, 'session.sql'), client);
-    res.send({message: 'queries sended to run'});
-  });
-});
+// router.get('/schema', function (req, res, next) {
+//   pg.defaults.ssl = true;
+//   pg.connect(process.env.DATABASE_URL, function (err, client) {
+//     if (err) {
+//       res.send({type: 'connect', message: 'error', error: err});
+//       process.exit(1);
+//     }
+//     console.log('Connected to postgres! Running schemas...');
+//     processSQLFile(path.resolve(__dirname, 'session.sql'), client);
+//     res.send({message: 'queries sended to run'});
+//   });
+// });
 
 function processSQLFile (fileName, client) {
   console.log('fileName', fileName);
