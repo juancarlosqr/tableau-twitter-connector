@@ -1,6 +1,6 @@
 {
   "name": "tableau-twitter-connector",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Tableau Web Data Connector to get Twitter data",
   "private": true,
   "main": "server.js",
@@ -27,7 +27,6 @@
   },
   "homepage": "https://github.com/juancarlosqr/tableau-twitter-connector#tableau-twitter-web-data-connector",
   "dependencies": {
-    "batch": "^0.5.3",
     "connect-pg-simple": "^3.1.0",
     "ejs": "^2.4.1",
     "express": "^4.13.4",
