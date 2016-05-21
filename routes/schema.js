@@ -17,8 +17,9 @@ router.get('/schema', function (req, res, next) {
 });
 
 function processSQLFile (fileName, client, res) {
+  console.log('fileName', fileName);
   // Extract SQL queries from files. Assumes no ';' in the fileNames
-  var queries = fs.readFileSync(fileName).toString()
+  var queries = fs.readFile(fileName).toString()
     .replace(/(\r\n|\n|\r)/gm," ") // remove newlines
     .replace(/\s+/g, ' ') // excess white space
     .split(";") // split into all statements
