@@ -33,18 +33,19 @@ function processSQLFile (fileName, client) {
   // Execute each SQL query sequentially
   queries.forEach(function (query) {
     console.log('Executing query = ', query);
-    batch.push(function (done) {
+    // batch.push(function (done) {
       client.query(query, function (err, result) {
         if (err) {
           console.log(JSON.stringify({type: 'query', message: 'error', result: error}));
           process.exit(1);
         }
-        done();
+        // done();
         console.log(JSON.stringify({message: 'success', result: result}));
         process.exit(0);
       });
-    });
+    // });
   });
+  done();
 }
 
 module.exports = router;
