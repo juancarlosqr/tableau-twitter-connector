@@ -25,18 +25,6 @@ router.get('/schema/:action', function (req, res, next) {
 
 router.get('/schema', function (req, res, next) {
   pg.defaults.ssl = true;
-  var client = new pg.Client(process.env.DATABASE_URL);
-  client.connect();
-  var query = client.query('CREATE TABLE "session" ("sid" varchar NOT NULL COLLATE "default", "sess" json NOT NULL, "expire" timestamp(6) NOT NULL ) WITH (OIDS=FALSE);');
-  query.on("end", function (result) {
-    client.end();
-    res.write('Table Schema Created');
-    res.end();
-  });
-});
-
-router.get('/schema', function (req, res, next) {
-  pg.defaults.ssl = true;
   pg.connect(process.env.DATABASE_URL, function (err, client) {
     if (err) {
       res.send({type: 'connect', message: 'error', error: err});
