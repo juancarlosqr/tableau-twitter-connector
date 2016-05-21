@@ -27,13 +27,15 @@
   },
   "homepage": "https://github.com/juancarlosqr/tableau-twitter-connector#tableau-twitter-web-data-connector",
   "dependencies": {
-    "connect-mongodb-session": "^1.1.1",
+    "batch": "^0.5.3",
+    "connect-pg-simple": "^3.1.0",
     "ejs": "^2.4.1",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "grant-express": "^3.6.2",
     "http-auth": "^2.3.6",
     "morgan": "^1.7.0",
+    "pg": "^4.5.5",
     "purest": "^2.0.1"
   },
   "devDependencies": {

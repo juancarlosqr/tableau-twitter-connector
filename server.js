@@ -2,54 +2,86 @@ var express = require('express')
   , logger = require('morgan')
   , session = require('express-session')
   , auth = require('http-auth')
-  , config = require('./config')
   , sysInfo = require('./utils/sys-info')
   , Grant = require('grant-express')
-  , grant = new Grant(require('./grant.json'))
+  , grant = null
   , Purest = require('purest')
-  , twitter = new Purest({
-      provider:'twitter',
-      key: config.consumer_key,
-      secret: config.consumer_secret
-    })
-  , httpAuth = auth.basic({
-        realm: config.title,
-        file: __dirname + '/utils/users.htpasswd'
-    })
+  , twitter = null
   , env = process.env
-  , sessionStore = null
   , app = express()
-  , port = env.PORT || config.port;
-  // , host = env.NODE_IP || config.host;
+  , title = 'Tableau Twitter Connector'
+  , sessionStore = null
+  , httpAuth = null
+  , config = null
+  , schema = require('./routes/schema');
 
-// session middleware config
+// config variables
 if (env.NODE_ENV === 'production') {
-  var MongoDBStore = require('connect-mongodb-session')(session);
-  sessionStore = new MongoDBStore({
-    uri: env.OPENSHIFT_MONGODB_DB_URL,
-    collection: config.session_collection
-  });
+  config = {
+    protocol: env.APP_PROTOCOL,
+    host: env.APP_HOST,
+    port: env.PORT,
+    logger_env: env.NODE_ENV,
+    session_key: env.APP_SESSION_KEY,
+    consumer_key: env.APP_TW_KEY,
+    consumer_secret: env.APP_TW_SECRET,
+    user: env.APP_USER,
+    auth: env.APP_AUTH
+  };
+  sessionStore = new (require('connect-pg-simple')(session))();
 } else {
-  sessionStore = new session.MemoryStore()
+  config = require('./config');
+  sessionStore = new session.MemoryStore();
 }
 
+// session middleware
 app.use(session({
   store: sessionStore,
   saveUninitialized: false,
   secret: config.session_key,
-  resave: false
+  resave: false,
+  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }
 }));
+
+// grant middleware
+grant = new Grant({
+  'server': {
+    'protocol': config.protocol,
+    'host': config.host + ':' + config.port
+  },
+  'twitter': {
+    'key': config.consumer_key,
+    'secret': config.consumer_secret,
+    'callback': '/handle_twitter_callback'
+  }
+});
+
+app.use(grant);
+
+twitter = new Purest({
+  provider: 'twitter',
+  key: config.consumer_key,
+  secret: config.consumer_secret
+});
+
+// http-auth middleware
+httpAuth = auth.basic({
+  realm: title
+}, function (username, password, callback) {
+  callback(username === config.user && password === config.auth);
+});
+
+// morgan middleware
+app.use(logger(config.logger_env));
 
 // views and static setup-up
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-// morgan middleware
-app.use(logger(env.NODE_ENV || config.logger_env));
-
-// grant middleware
-app.use(grant);
+/*
+ * ROUTES
+ */
 
 app.get('/handle_twitter_callback', function (req, res) {
   if (req.query.error) {
@@ -88,6 +120,8 @@ app.get('/twitter/followers', function (req, res) {
   });
 });
 
+app.get('/schema', auth.connect(httpAuth), schema);
+
 app.get('/info/:func', auth.connect(httpAuth), function(req, res) {
   var func = req.params.func;
   if (func !== 'gen' && func !== 'poll') {
@@ -114,12 +148,12 @@ app.get('/heroku', function(req, res) {
 app.get('/', function(req, res) {
   res.set('Cache-Control', 'no-cache, no-store');
   res.render('index', {
-    title: config.title,
+    title: title,
     sessionID: req.query.id || ''
   });
 });
 
-app.listen(port, function() {
-  console.log(`Express server listening on port ${ port }`);
+app.listen(config.port, function() {
+  console.log(`Express server listening on port ${ config.port }`);
   console.log(`Application worker ${ process.pid } started...`);
 });
