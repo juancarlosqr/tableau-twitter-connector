@@ -4,7 +4,36 @@ var express = require('express')
   , path = require('path')
   , pg = require('pg')
   , Batch = require('batch')
-  , batch = new Batch;
+  , batch = new Batch
+  , queries = {
+    drop: 'DROP TABLE IF EXISTS "session";',
+    create: 'CREATE TABLE "session" ("sid" varchar NOT NULL COLLATE "default", "sess" json NOT NULL, "expire" timestamp(6) NOT NULL ) WITH (OIDS=FALSE);',
+    alter: 'ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;'
+  };
+
+router.get('/schema/:action', function (req, res, next) {
+  pg.defaults.ssl = true;
+  var client = new pg.Client(process.env.DATABASE_URL);
+  client.connect();
+  var query = client.query(queries[req.params.action]);
+  query.on("end", function (result) {
+    client.end();
+    res.write('Action executed successfully');
+    res.end();
+  });
+});
+
+router.get('/schema', function (req, res, next) {
+  pg.defaults.ssl = true;
+  var client = new pg.Client(process.env.DATABASE_URL);
+  client.connect();
+  var query = client.query('CREATE TABLE "session" ("sid" varchar NOT NULL COLLATE "default", "sess" json NOT NULL, "expire" timestamp(6) NOT NULL ) WITH (OIDS=FALSE);');
+  query.on("end", function (result) {
+    client.end();
+    res.write('Table Schema Created');
+    res.end();
+  });
+});
 
 router.get('/schema', function (req, res, next) {
   pg.defaults.ssl = true;
