@@ -7,17 +7,18 @@ var express = require('express')
   , batch = new Batch;
 
 router.get('/schema', function (req, res, next) {
+  pg.defaults.ssl = true;
   pg.connect(process.env.DATABASE_URL, function (err, client) {
     if (err) {
       res.send({type: 'connect', message: 'error', error: err});
       process.exit(1);
     }
     console.log('Connected to postgres! Running schemas...');
-    processSQLFile(path.resolve(__dirname, 'session.sql'), client, res);
+    processSQLFile(path.resolve(__dirname, 'session.sql'), res, client);
   });
 });
 
-function processSQLFile (fileName, client, res) {
+function processSQLFile (fileName, res, client) {
   console.log('fileName', fileName);
   // Extract SQL queries from files. Assumes no ';' in the fileNames
   var queries = fs.readFileSync(fileName).toString()
@@ -30,14 +31,14 @@ function processSQLFile (fileName, client, res) {
   console.log('Starting executing querys');
   // Execute each SQL query sequentially
   queries.forEach(function (query) {
+    console.log('Executing query = ', query);
     batch.push(function (done) {
-      console.log('Executing query = ', query);
       client.query(query, function (err, result) {
-        done();
         if (err) {
           res.send({type: 'query', message: 'error', result: error});
           process.exit(1);
         }
+        done();
         res.send({message: 'success', result: result});
         process.exit(0);
       });
