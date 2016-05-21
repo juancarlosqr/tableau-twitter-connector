@@ -1,6 +1,7 @@
 var express = require('express')
   , router = express.Router()
   , fs = require('fs')
+  , path = require('path')
   , pg = require('pg')
   , Batch = require('batch')
   , batch = new Batch;
@@ -11,7 +12,7 @@ router.get('/schema', function (req, res, next) {
       res.send({type: 'connect', message: 'error', error: err});
       process.exit(1);
     }
-    processSQLFile('session.sql', client, res);
+    processSQLFile(path.resolve(__dirname, 'session.sql'), client, res);
   });
 });
 
