@@ -14,11 +14,12 @@ router.get('/schema', function (req, res, next) {
       process.exit(1);
     }
     console.log('Connected to postgres! Running schemas...');
-    processSQLFile(path.resolve(__dirname, 'session.sql'), res, client);
+    processSQLFile(path.resolve(__dirname, 'session.sql'), client);
+    res.send({message: 'queries sended to run'});
   });
 });
 
-function processSQLFile (fileName, res, client) {
+function processSQLFile (fileName, client) {
   console.log('fileName', fileName);
   // Extract SQL queries from files. Assumes no ';' in the fileNames
   var queries = fs.readFileSync(fileName).toString()
@@ -35,11 +36,11 @@ function processSQLFile (fileName, res, client) {
     batch.push(function (done) {
       client.query(query, function (err, result) {
         if (err) {
-          res.send({type: 'query', message: 'error', result: error});
+          console.log(JSON.stringify({type: 'query', message: 'error', result: error}));
           process.exit(1);
         }
         done();
-        res.send({message: 'success', result: result});
+        console.log(JSON.stringify({message: 'success', result: result}));
         process.exit(0);
       });
     });

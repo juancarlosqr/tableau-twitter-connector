@@ -13,6 +13,7 @@ var express = require('express')
   , sessionStore = null
   , httpAuth = null
   , config = null
+  , configHost = null
   , schema = require('./routes/schema');
 
 // config variables
@@ -28,9 +29,11 @@ if (env.NODE_ENV === 'production') {
     user: env.APP_USER,
     auth: env.APP_AUTH
   };
+  configHost = env.APP_HOST;
   sessionStore = new (require('connect-pg-simple')(session))();
 } else {
   config = require('./config');
+  configHost = config.host + ':' + config.port;
   sessionStore = new session.MemoryStore();
 }
 
@@ -47,7 +50,7 @@ app.use(session({
 grant = new Grant({
   'server': {
     'protocol': config.protocol,
-    'host': config.host + ':' + config.port
+    'host': configHost
   },
   'twitter': {
     'key': config.consumer_key,
