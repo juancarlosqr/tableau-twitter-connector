@@ -123,7 +123,7 @@ app.get('/twitter/followers', function (req, res) {
   });
 });
 
-app.get('/schema', auth.connect(httpAuth), schema);
+app.use('/schema', auth.connect(httpAuth), schema);
 
 app.get('/info/:func', auth.connect(httpAuth), function(req, res) {
   var func = req.params.func;
